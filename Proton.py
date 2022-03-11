@@ -13,9 +13,10 @@ from os.path import isfile, join
 import smtplib
 import wikipedia
 import Gesture_Controller
-# import Gesture_Controller_Gloved as Gesture_Controller
+#import Gesture_Controller_Gloved as Gesture_Controller
 import app
 from threading import Thread
+
 
 # -------------Object Initialization---------------
 today = date.today()
@@ -28,10 +29,9 @@ engine.setProperty('voice', voices[0].id)
 
 # ----------------Variables------------------------
 file_exp_status = False
-files = []
+files =[]
 path = ''
-is_awake = True  # Bot status
-
+is_awake = True  #Bot status
 
 # ------------------Functions----------------------
 def reply(audio):
@@ -45,21 +45,19 @@ def reply(audio):
 def wish():
     hour = int(datetime.datetime.now().hour)
 
-    if hour >= 0 and hour < 12:
+    if hour>=0 and hour<12:
         reply("Good Morning!")
-    elif hour >= 12 and hour < 18:
-        reply("Good Afternoon!")
+    elif hour>=12 and hour<18:
+        reply("Good Afternoon!")   
     else:
-        reply("Good Evening!")
-
+        reply("Good Evening!")  
+        
     reply("I am Proton, how may I help you?")
-
 
 # Set Microphone parameters
 with sr.Microphone() as source:
-    r.energy_threshold = 500
-    r.dynamic_energy_threshold = False
-
+        r.energy_threshold = 500 
+        r.dynamic_energy_threshold = False
 
 # Audio to String
 def record_audio():
@@ -82,10 +80,10 @@ def record_audio():
 def respond(voice_data):
     global file_exp_status, files, is_awake, path
     print(voice_data)
-    voice_data.replace('proton', '')
+    voice_data.replace('proton','')
     app.eel.addUserMsg(voice_data)
 
-    if is_awake == False:
+    if is_awake==False:
         if 'wake up' in voice_data:
             is_awake = True
             wish()
@@ -112,41 +110,6 @@ def respond(voice_data):
         except:
             reply('Please check your Internet')
 
-    elif 'Anja portal' in voice_data:
-        reply('Searching for ' + voice_data.split('Anja portal')[1])
-        reply('Anjac website')
-        url = 'https://stdeducation-accounts.cholaauth.com/login?view_type=login&request_id=52069245-c304-4547-892d' \
-              '-1e2d7ebb2dd9&client_id=642f2f48-e11c-4d75-927b-8451a1fe9b13&flow_id=b1b7f6ed-7f25-4691-b7e9' \
-              '-4e23aa3a14f0' + \
-              voice_data.split('Anja portal')[1]
-        try:
-            webbrowser.get().open(url)
-            reply('This is what I found Sir')
-        except:
-            reply('Please check your Internet')
-
-    elif ('Zomato' in voice_data) or ('zomato' in voice_data):
-        reply('Searching for ' + voice_data.split('zomato')[1])
-        reply('Zomato website')
-        url = 'https://www.zomato.com/' + \
-              voice_data.split('zomato')[1]
-        try:
-            webbrowser.get().open(url)
-            reply('This is what I found Sir')
-        except:
-            reply('Please check your Internet')
-
-    elif 'Principle of Aj college' in voice_data:
-        reply('Searching for ' + voice_data.split('Principle of Aj college')[1])
-        reply(' Dr.C.Ashok Principal of Ayya Nadar Janaki Ammal College Sivakasi')
-        url = 'https://www.anjaconline.org/pages/PrincipalsMessage?v=1#:~:text=Dr.,C%20B.Sc.%2C%20B.P.' + \
-              voice_data.split('Principle of Aj college')[1]
-        try:
-            webbrowser.get().open(url)
-            reply('This is what I found Sir')
-        except:
-            reply('Please check your Internet')
-
     elif 'location' in voice_data:
         reply('Which place are you looking for ?')
         temp_audio = record_audio()
@@ -167,17 +130,17 @@ def respond(voice_data):
         if Gesture_Controller.GestureController.gc_mode:
             Gesture_Controller.GestureController.gc_mode = 0
         app.ChatBot.close()
-        # sys.exit() always raises SystemExit, Handle it in main loop
+        #sys.exit() always raises SystemExit, Handle it in main loop
         sys.exit()
-
-
+        
+    
     # DYNAMIC CONTROLS
     elif 'launch gesture recognition' in voice_data:
         if Gesture_Controller.GestureController.gc_mode:
             reply('Gesture recognition is already active')
         else:
             gc = Gesture_Controller.GestureController()
-            t = Thread(target=gc.start)
+            t = Thread(target = gc.start)
             t.start()
             reply('Launched Successfully')
 
@@ -187,19 +150,19 @@ def respond(voice_data):
             reply('Gesture recognition Stopped')
         else:
             reply('Gesture recognition is already inactive')
-
+        
     elif 'copy' in voice_data:
         with keyboard.pressed(Key.ctrl):
             keyboard.press('c')
             keyboard.release('c')
         reply('Copied')
-
-    elif 'page' in voice_data or 'pest' in voice_data or 'paste' in voice_data:
+          
+    elif 'page' in voice_data or 'pest'  in voice_data or 'paste' in voice_data:
         with keyboard.pressed(Key.ctrl):
             keyboard.press('v')
             keyboard.release('v')
         reply('Pasted')
-
+        
     # File Navigation (Default Folder set to C://)
     elif 'list' in voice_data:
         counter = 0
@@ -207,34 +170,34 @@ def respond(voice_data):
         files = listdir(path)
         filestr = ""
         for f in files:
-            counter += 1
+            counter+=1
             print(str(counter) + ':  ' + f)
             filestr += str(counter) + ':  ' + f + '<br>'
         file_exp_status = True
         reply('These are the files in your root directory')
         app.ChatBot.addAppMsg(filestr)
-
+        
     elif file_exp_status == True:
-        counter = 0
+        counter = 0   
         if 'open' in voice_data:
-            if isfile(join(path, files[int(voice_data.split(' ')[-1]) - 1])):
-                os.startfile(path + files[int(voice_data.split(' ')[-1]) - 1])
+            if isfile(join(path,files[int(voice_data.split(' ')[-1])-1])):
+                os.startfile(path + files[int(voice_data.split(' ')[-1])-1])
                 file_exp_status = False
             else:
                 try:
-                    path = path + files[int(voice_data.split(' ')[-1]) - 1] + '//'
+                    path = path + files[int(voice_data.split(' ')[-1])-1] + '//'
                     files = listdir(path)
                     filestr = ""
                     for f in files:
-                        counter += 1
+                        counter+=1
                         filestr += str(counter) + ':  ' + f + '<br>'
                         print(str(counter) + ':  ' + f)
                     reply('Opened Successfully')
                     app.ChatBot.addAppMsg(filestr)
-
+                    
                 except:
                     reply('You do not have permission to access this folder')
-
+                                    
         if 'back' in voice_data:
             filestr = ""
             if path == 'C://':
@@ -245,19 +208,18 @@ def respond(voice_data):
                 path += '//'
                 files = listdir(path)
                 for f in files:
-                    counter += 1
+                    counter+=1
                     filestr += str(counter) + ':  ' + f + '<br>'
                     print(str(counter) + ':  ' + f)
                 reply('ok')
                 app.ChatBot.addAppMsg(filestr)
-
-    else:
+                   
+    else: 
         reply('I am not functioned to do this !')
-
 
 # ------------------Driver Code--------------------
 
-t1 = Thread(target=app.ChatBot.start)
+t1 = Thread(target = app.ChatBot.start)
 t1.start()
 
 # Lock main thread until Chatbot has started
@@ -268,21 +230,24 @@ wish()
 voice_data = None
 while True:
     if app.ChatBot.isUserInput():
-        # take input from GUI
+        #take input from GUI
         voice_data = app.ChatBot.popUserInput()
     else:
-        # take input from Voice
+        #take input from Voice
         voice_data = record_audio()
 
-    # process voice_data
+    #process voice_data
     if 'proton' in voice_data:
         try:
-            # Handle sys.exit()
+            #Handle sys.exit()
             respond(voice_data)
         except SystemExit:
             reply("Exit Successfull")
             break
         except:
-            # some other exception got raised
-            print("EXCEPTION raised while closing.")
+            #some other exception got raised
+            print("EXCEPTION raised while closing.") 
             break
+        
+
+

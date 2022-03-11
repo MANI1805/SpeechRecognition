@@ -89,7 +89,7 @@ class HandRecog:
             try:
                 ratio = round(dist/dist2,1)
             except:
-                ratio = round(dist/0.01,1)
+                ratio = round(dist1/0.01,1)
 
             self.finger = self.finger << 1
             if ratio > 0.5 :
@@ -161,7 +161,7 @@ class Controller:
         dist = round((hand_result.landmark[8].x - Controller.pinchstartxcoord)*10,1)
         return dist
     
-    def changesystembrightness(self):
+    def changesystembrightness():
         currentBrightnessLv = sbcontrol.get_brightness()/100.0
         currentBrightnessLv += Controller.pinchlv/50.0
         if currentBrightnessLv > 1.0:
@@ -170,7 +170,7 @@ class Controller:
             currentBrightnessLv = 0.0       
         sbcontrol.fade_brightness(int(100*currentBrightnessLv) , start = sbcontrol.get_brightness())
     
-    def changesystemvolume(self):
+    def changesystemvolume():
         devices = AudioUtilities.GetSpeakers()
         interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
         volume = cast(interface, POINTER(IAudioEndpointVolume))
@@ -182,11 +182,11 @@ class Controller:
             currentVolumeLv = 0.0
         volume.SetMasterVolumeLevelScalar(currentVolumeLv, None)
     
-    def scrollVertical(self):
+    def scrollVertical():
         pyautogui.scroll(120 if Controller.pinchlv>0.0 else -120)
         
     
-    def scrollHorizontal(self):
+    def scrollHorizontal():
         pyautogui.keyDown('shift')
         pyautogui.keyDown('ctrl')
         pyautogui.scroll(-120 if Controller.pinchlv>0.0 else 120)
